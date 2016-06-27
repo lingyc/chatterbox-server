@@ -29,5 +29,9 @@
     "presets": [
       "es2015"
     ]
+  },
+  "dependencies": {
+    "http": "0.0.0",
+    "underscore": "^1.8.3"
   }
 }
