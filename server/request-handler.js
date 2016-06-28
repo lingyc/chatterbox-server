@@ -12,6 +12,17 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+/*
+  Chat Object {
+    createdAt
+    roomname
+    test
+    username
+  }
+
+*/
+var _chats = [];
+
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -39,11 +50,30 @@ exports.requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+  headers['Content-Type'] = 'application/json';
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
+
+  if (request.method === 'OPTIONS') {
+    response.end(statusCode + 'OK', headers);
+  } else if (request.method === 'GET') {
+    if (_chats.length) {
+      response.end(JSON.stringify({'results': _chats}));
+    } else {
+      response.end('NO MESSAGES');
+    }
+  } else if (request.method === 'POST') {
+    request.on('data', chunk => {
+      var data = JSON.parse(chunk.toString());
+      console.log(data);
+      data.createdAt = new Date;
+      console.log(data);
+      _chats.push(data);
+      console.log(_chats);
+    });
+  }
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -52,7 +82,6 @@ exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World!');
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).

@@ -4,7 +4,7 @@ const app = {
   username: '',
   roomname: 'Main',
   friends: {},
-  server: 'https://api.parse.com/1/classes/messages'
+  server: 'http://127.0.0.1:3000/'
 };
 
 app.init = function() {
@@ -60,7 +60,7 @@ app.send = function(message) {
     type: 'POST',
     data: JSON.stringify(message),
     contentType: 'application/json',
-    success: data = > {
+    success: data => {
       console.log('chatterbox: Message sent', message);
     },
     error: data => {
@@ -73,10 +73,10 @@ app.fetch = function() {
   var data = $.ajax({
     url: this.server,
     type: 'GET',
-    data: {order: '-createdAt'}, // JSON.stringify(message),
+    data: {order: '-createdAt'},
     contentType: 'application/json',
     success: data => {
-      // console.log('chatterbox: Message received', data);
+      console.log(data);
       app.clearMessages();
       app.populateChat(data.results);
       app.populateRooms(data.results);
