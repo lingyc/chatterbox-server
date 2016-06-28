@@ -67,11 +67,8 @@ exports.requestHandler = function(request, response) {
   } else if (request.method === 'POST') {
     request.on('data', chunk => {
       var data = JSON.parse(chunk.toString());
-      console.log(data);
       data.createdAt = new Date;
-      console.log(data);
       _chats.push(data);
-      console.log(_chats);
     });
   }
 
