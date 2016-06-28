@@ -21,7 +21,17 @@ this file and include it in basic-server.js so that it actually works.
   }
 
 */
+var fs = require('fs');
 var _chats = [];
+
+var readFile = function(callback) {
+  fs.readFile('messageData.txt', 'utf-8', (err, chatData) => {
+    if (err) { throw err; }
+    callback(chatData);
+  });
+};
+
+readFile((chatData) => _chats = JSON.parse(chatData || '[]'));
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -60,13 +70,19 @@ exports.requestHandler = function(request, response) {
     response.end(statusCode + 'OK', headers);
   } else if (request.method === 'GET' && request.url === '/classes/messages') {
     response.writeHead(statusCode, headers);
+
     response.end(JSON.stringify({'results': _chats}));
+
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
     request.on('data', chunk => {
       var data = JSON.parse(chunk.toString());
       data.createdAt = new Date;
       _chats.push(data);
+
+      if (_chats.length > 100) { _chats.unshift(); }
+      writeFile(JSON.stringify(_chats));
     });
+
     request.on('end', () => {
       statusCode = 201;
       response.writeHead(statusCode, headers);
@@ -86,6 +102,15 @@ exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
+};
+
+var writeFile = function(chatData) {
+  fs.writeFile('messageData.txt', chatData, function(err) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log('The file was saved!');
+  }); 
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
