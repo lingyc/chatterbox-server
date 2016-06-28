@@ -16,7 +16,7 @@ this file and include it in basic-server.js so that it actually works.
   Chat Object {
     createdAt
     roomname
-    test
+    message
     username
   }
 
@@ -54,21 +54,28 @@ exports.requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
-
+  
+  console.log(request.url);
   if (request.method === 'OPTIONS') {
+    response.writeHead(statusCode, headers);
     response.end(statusCode + 'OK', headers);
   } else if (request.method === 'GET') {
     if (_chats.length) {
+      response.writeHead(statusCode, headers);
       response.end(JSON.stringify({'results': _chats}));
     } else {
+      response.writeHead(statusCode, headers);
       response.end('NO MESSAGES');
     }
-  } else if (request.method === 'POST') {
+  } else if (request.method === 'POST' && request.url === '/classes/messages') {
     request.on('data', chunk => {
       var data = JSON.parse(chunk.toString());
       data.createdAt = new Date;
       _chats.push(data);
+    }).on('end', () => {
+      statusCode = 201;
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify({'statusCode': 201, 'success': 'Message received'}));
     });
   }
 

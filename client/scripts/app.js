@@ -56,7 +56,7 @@ app.init = function() {
 
 app.send = function(message) {
   $.ajax({
-    url: this.server,
+    url: this.server + 'classes/messages',
     type: 'POST',
     data: JSON.stringify(message),
     contentType: 'application/json',
@@ -97,7 +97,7 @@ app.fetch = function() {
 
   app.createMessage = chatObj => {
     const tempMsg = $('<div class="chat"></div>');
-    tempMsg.text(chatObj.text);
+    tempMsg.text(chatObj.message);
     const tempUsr = $('<div class="username"></div>');
     tempUsr.text(chatObj.username);
     if (app.friends[chatObj.username]) {
@@ -153,11 +153,11 @@ app.fetch = function() {
     e.stopPropagation();
     handleFlag = true;
 
-    var message = {};
-    message.username = app.username;
-    message.text = $('#message').val();
-    message.roomname = app.roomname || 'Main';
-    app.addMessage(message);
+    var post = {};
+    post.username = app.username;
+    post.message = $('#message').val();
+    post.roomname = app.roomname || 'Main';
+    app.addMessage(post);
     $('.username').val('');
     $('#message').val('');
   };
