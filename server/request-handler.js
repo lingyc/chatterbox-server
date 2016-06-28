@@ -55,28 +55,28 @@ exports.requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   
-  console.log(request.url);
   if (request.method === 'OPTIONS') {
     response.writeHead(statusCode, headers);
     response.end(statusCode + 'OK', headers);
-  } else if (request.method === 'GET') {
-    if (_chats.length) {
-      response.writeHead(statusCode, headers);
-      response.end(JSON.stringify({'results': _chats}));
-    } else {
-      response.writeHead(statusCode, headers);
-      response.end('NO MESSAGES');
-    }
+  } else if (request.method === 'GET' && request.url === '/classes/messages') {
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify({'results': _chats}));
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
     request.on('data', chunk => {
       var data = JSON.parse(chunk.toString());
       data.createdAt = new Date;
       _chats.push(data);
-    }).on('end', () => {
+    });
+    request.on('end', () => {
       statusCode = 201;
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify({'statusCode': 201, 'success': 'Message received'}));
     });
+  } else {
+    console.log(request.url);
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify({'statusCode': 404, 'error': 'Invalid URL'}));
   }
 
   // Make sure to always call response.end() - Node may not send

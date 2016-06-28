@@ -71,9 +71,9 @@ app.send = function(message) {
 
 app.fetch = function() {
   var data = $.ajax({
-    url: this.server,
+    url: this.server + 'classes/messages',
     type: 'GET',
-    data: {order: '-createdAt'},
+    // data: {order: '-createdAt'},
     contentType: 'application/json',
     success: data => {
       console.log(data);
@@ -120,7 +120,7 @@ app.fetch = function() {
     $newMsg.data('room', chatObj.roomname);
     $newMsg.hide();
     // appends it to the page
-    $('#chats').append($newMsg);
+    $('#chats').prepend($newMsg);
     if (app.roomname === 'Main' || $newMsg.data('room') === app.roomname) {
       $newMsg.show();
     }
