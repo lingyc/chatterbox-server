@@ -51,6 +51,7 @@ var ip = '127.0.0.1';
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
+server.use(express.static('client'));
 
 server.options('/classes/messages', (request, response) => {
   response.header(headers);
